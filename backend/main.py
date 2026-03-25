@@ -1,5 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
+
+class HelloResponse(BaseModel):
+    message: str
+
+
+class EchoRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=200)
+
+
+class EchoResponse(BaseModel):
+    echoed_text: str
+    length: int
 
 app = FastAPI(title="bitcamp-2026 API", version="0.1.0")
 
@@ -28,6 +42,11 @@ def root() -> dict[str, str]:
     }
 
 
-@app.get("/api/v1/hello")
-def hello() -> dict[str, str]:
-    return {"message": "Hello from FastAPI"}
+@app.get("/api/v1/hello", response_model=HelloResponse)
+def hello() -> HelloResponse:
+    return HelloResponse(message="Hello from FastAPI")
+
+
+@app.post("/api/v1/echo", response_model=EchoResponse)
+def echo(payload: EchoRequest) -> EchoResponse:
+    return EchoResponse(echoed_text=payload.text, length=len(payload.text))

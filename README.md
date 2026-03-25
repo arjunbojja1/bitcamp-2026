@@ -32,6 +32,18 @@ Frontend is served by default at `http://localhost:5173`.
 Backend API is served by default at `http://127.0.0.1:8000`.
 Interactive API docs are available at `http://127.0.0.1:8000/docs`.
 
+## API Endpoints
+
+- `GET /health` → `{"status":"ok"}`
+- `GET /api/v1/hello` → `{"message":"Hello from FastAPI"}`
+- `POST /api/v1/echo` with body `{"text":"hello"}` → `{"echoed_text":"hello","length":5}`
+
+Example requests:
+
+- `curl http://127.0.0.1:8000/health`
+- `curl http://127.0.0.1:8000/api/v1/hello`
+- `curl -X POST http://127.0.0.1:8000/api/v1/echo -H "Content-Type: application/json" -d '{"text":"hello"}'`
+
 ## Common Commands
 
 - `make help` — list available commands
