@@ -1,120 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useEffect, useState } from 'react'
+import { getApiBaseUrl, getHealth, getHello } from './api/client'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const apiBaseUrl = getApiBaseUrl()
+  const [apiMessage, setApiMessage] = useState('Checking backend...')
+
+  async function checkBackend() {
+    try {
+      const [health, hello] = await Promise.all([getHealth(), getHello()])
+      setApiMessage(`${hello.message} (${health.status})`)
+    } catch {
+      setApiMessage(`Backend unavailable at ${getApiBaseUrl()}`)
+    }
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      checkBackend()
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <main className="dashboard">
+      <header className="dashboard-header">
+        <h1>bitcamp-2026</h1>
+        <p>Hackathon Dashboard</p>
+      </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+      <section className="panel">
+        <h2>Backend Status</h2>
+        <p>{apiMessage}</p>
+        <p>
+          API base URL: <code>{apiBaseUrl}</code>
+        </p>
+        <div className="actions">
+          <button className="counter" onClick={checkBackend}>
+            Refresh status
+          </button>
+          <a className="counter" href={`${apiBaseUrl}/docs`} target="_blank">
+            Open API docs
+          </a>
         </div>
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <section className="panel">
+        <h2>Quick Start</h2>
+        <ul>
+          <li>
+            <code>make setup</code>
+          </li>
+          <li>
+            <code>make dev-backend</code>
+          </li>
+          <li>
+            <code>make dev-frontend</code>
+          </li>
+          <li>
+            <code>make lint && make smoke</code>
+          </li>
+        </ul>
+      </section>
+
+      <section className="panel">
+        <h2>Hackathon Targets</h2>
+        <ul>
+          <li>Define API contract for first feature.</li>
+          <li>Ship one vertical slice end-to-end.</li>
+          <li>Keep PRs small and CI green.</li>
+        </ul>
+      </section>
+    </main>
   )
 }
 
